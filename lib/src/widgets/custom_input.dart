@@ -63,54 +63,62 @@ class _CustomInputState extends State<CustomInput> {
   @override
   Widget build(BuildContext context) {
 
-    return Container(
-      padding: EdgeInsets.all( 5 ),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular( 10 ),
-        border: Border.all(
-          color: isFocused ? nixEnCortoPrimaryColor : nixEnCortoMutedColor.withOpacity(0.5)
-        ),
-        color: Color(0xffEFEFEF),
-      ),
-      child: TextFormField(
-        focusNode: _focus,
-        maxLines: this.widget.maxLines,
-        validator: this.widget.validator != null ? this.widget.validator : ( value ) {
-          if( value.isEmpty ) {
-            return 'Ingrese un valor al campo';
-          }
-          return null;
-        } ,
-        style: this.widget.textStyle,
-        controller: this.widget.controller,
-        cursorColor: nixEnCortoPrimaryColor,
-        autocorrect: false,
-        keyboardType: this.widget.keyboardType,
-        textCapitalization: this.widget.textCapitalization,
-        textInputAction: this.widget.textInputAction,
-        obscureText: this.widget.isPassword ? this.showPassword ? false : true : false, 
-        decoration: InputDecoration(
-          suffixIcon: this.widget.isPassword ? Padding(
-            padding: const EdgeInsets.only( top: 15,),
-            child: InkWell( splashColor: Colors.transparent ,child: FaIcon( this.showPassword ? FontAwesomeIcons.eyeSlash : FontAwesomeIcons.eye, size: 20), onTap: () {
-              setState(() {
-                this.showPassword = !this.showPassword;
-              });
-            }),
-          ) : null,
-          prefixIcon: Icon( this.widget.prefixIcon, size: this.widget.prefixIconSize,),
-          hintText: this.widget.hintText,
-          focusColor: nixEnCortoPrimaryColor,
-          border: InputBorder.none,
-          focusedBorder: InputBorder.none,
-          errorBorder: UnderlineInputBorder(
-            borderSide: BorderSide( color: nixEnCortoDangerColor)
+    return Stack(
+      children: [
+        Container(
+          padding: EdgeInsets.all( 2 ),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular( 10 ),
+            border: Border.all(
+              color: isFocused ? nixEnCortoPrimaryColor : nixEnCortoMutedColor.withOpacity(0.5)
+            ),
+            color: Color(0xffEFEFEF),
           ),
-          errorStyle: TextStyle(
-            color: nixEnCortoDangerColor
+          child: TextFormField(
+            readOnly: true,
+            decoration: InputDecoration(
+              border: InputBorder.none,
+            ),
           ),
         ),
-      ),
+        TextFormField(
+          focusNode: _focus,
+          maxLines: this.widget.maxLines,
+          validator: this.widget.validator != null ? this.widget.validator : ( value ) {
+            if( value.isEmpty ) {
+              return 'Ingrese un valor al campo';
+            }
+            return null;
+          } ,
+          style: this.widget.textStyle,
+          controller: this.widget.controller,
+          cursorColor: nixEnCortoPrimaryColor,
+          autocorrect: false,
+          keyboardType: this.widget.keyboardType,
+          textCapitalization: this.widget.textCapitalization,
+          textInputAction: this.widget.textInputAction,
+          obscureText: this.widget.isPassword ? this.showPassword ? false : true : false, 
+          decoration: InputDecoration(
+            suffixIcon: this.widget.isPassword ? Padding(
+              padding: const EdgeInsets.only( top: 15,),
+              child: InkWell( splashColor: Colors.transparent ,child: FaIcon( this.showPassword ? FontAwesomeIcons.eyeSlash : FontAwesomeIcons.eye, size: 20), onTap: () {
+                setState(() {
+                  this.showPassword = !this.showPassword;
+                });
+              }),
+            ) : null,
+            prefixIcon: Icon( this.widget.prefixIcon, size: this.widget.prefixIconSize,),
+            hintText: this.widget.hintText,
+            focusColor: nixEnCortoPrimaryColor,
+            border: InputBorder.none,
+            focusedBorder: InputBorder.none,
+            errorBorder: InputBorder.none,
+            errorStyle: TextStyle(
+              color: nixEnCortoDangerColor
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

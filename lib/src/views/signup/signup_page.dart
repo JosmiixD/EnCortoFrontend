@@ -1,8 +1,11 @@
+import 'package:en_corto/src/helpers/helpers.dart';
+import 'package:en_corto/src/services/auth_service.dart';
 import 'package:en_corto/src/theme/constants.dart';
 import 'package:en_corto/src/widgets/custom_button.dart';
 import 'package:en_corto/src/widgets/custom_input.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:provider/provider.dart';
 
 
 class SignUpPage extends StatelessWidget {
@@ -82,6 +85,7 @@ class __SignUpFormState extends State<_SignUpForm> {
   Widget build(BuildContext context) {
 
     final Size size = MediaQuery.of(context).size;
+    final authService = Provider.of<AuthService>(context);
 
     return Form(
       key: _signUpKey,
@@ -95,6 +99,12 @@ class __SignUpFormState extends State<_SignUpForm> {
               prefixIcon: FontAwesomeIcons.user,
               textInputAction: TextInputAction.next,
               textCapitalization: TextCapitalization.words,
+              validator: ( value ) {
+                if( value.isEmpty ) {
+                  return 'Debe ingresar su nombre';
+                }
+                return null;
+              },
             ),
             SizedBox( height: 20),
             CustomInput(
@@ -103,6 +113,12 @@ class __SignUpFormState extends State<_SignUpForm> {
               prefixIcon: FontAwesomeIcons.user,
               textInputAction: TextInputAction.next,
               textCapitalization: TextCapitalization.words,
+              validator: ( value ) {
+                if( value.isEmpty ) {
+                  return 'Debe ingresar sus apellidos';
+                }
+                return null;
+              },
             ),
             SizedBox( height: 20),
             CustomInput(
@@ -111,6 +127,22 @@ class __SignUpFormState extends State<_SignUpForm> {
               prefixIcon: FontAwesomeIcons.envelope,
               textInputAction: TextInputAction.next,
               keyboardType: TextInputType.emailAddress,
+              validator: ( value ) {
+
+                if( value.isEmpty ) {
+                  return 'Ingrese su correo electronico';
+                } else {
+                  bool emailValid = RegExp(
+                      r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$')
+                  .hasMatch(value);
+
+                  if( !emailValid ) {
+                    return 'El correo no cumple el formato example@example.com';
+                  }
+                  return null;
+                }
+
+              },
             ),
             SizedBox( height: 20),
             CustomInput(
@@ -120,6 +152,12 @@ class __SignUpFormState extends State<_SignUpForm> {
               textInputAction: TextInputAction.next,
               prefixIconSize: 22,
               isPassword: true,
+              validator: ( value ) {
+                if( value.isEmpty ) {
+                  return 'Debe ingresar una contraseña';
+                }
+                return null;
+              },
             ),
             SizedBox( height: 20),
             CustomInput(
@@ -129,11 +167,67 @@ class __SignUpFormState extends State<_SignUpForm> {
               textInputAction: TextInputAction.done,
               prefixIconSize: 22,
               isPassword: true,
+              validator: ( value ) {
+                if( value.isEmpty ){
+                  return 'Ingrese nuevamente la contraseña';
+                } else {
+                  if( value != passwordController.text.trim() ) {
+                    return 'Las contraseñas no coinciden';
+                  }
+                  return null;
+                }
+              },
             ),
             SizedBox( height: 30 ),
             CustomButton(
-              text: 'Crear Cuenta',
-              onPressed: (){}
+              text: authService.authenticating ? 'Espere...' : 'Crear cuenta',
+              onPressed: authService.authenticating
+              ? null
+              : () async {  
+
+                FocusScope.of(context).unfocus();
+                if( _signUpKey.currentState.validate() ) {
+                  final email = emailController.text.trim();
+                  final password = passwordController.text.trim();
+                  final passwordConfirmation = passwordConfirmationController.text.trim();
+                  final name = nameController.text.trim();
+                  final lastName = lastNameController.text.trim();
+
+                  final response = await authService.signup( email: email, password: password, passwordConfirmation: passwordConfirmation, name: name, lastName: lastName);
+                
+                  if( response != null ) {
+                    showAlert(
+                      context,
+                      response.success ? FontAwesomeIcons.checkCircle : FontAwesomeIcons.frownOpen,
+                      response.success ? nixEnCortoSuccessColor : nixEnCortoDangerColor,
+                      response.success ? "Hola" : "Error",
+                      response.message
+                    );
+                    
+                    if( response.success ) {
+                      Future.delayed(const Duration(milliseconds: 2000 ), () {
+
+                        setState(() {
+                          Navigator.pushNamedAndRemoveUntil(context, 'client/products/list', (route) => false);
+                        });
+
+                      });
+                    } else {
+                      return;
+                    }
+                  } else {
+
+                    showAlert(
+                      context,
+                      FontAwesomeIcons.frownOpen,
+                      nixEnCortoDangerColor,
+                      "Error",
+                      "Ocurrio un error durante el proceso, intente nuevamente"
+                    );
+
+                  }
+                }
+              }
             ),
             SizedBox( height: 20 ),
             InkWell(

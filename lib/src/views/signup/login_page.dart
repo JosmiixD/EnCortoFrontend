@@ -1,8 +1,15 @@
+import 'dart:convert';
+
+import 'package:en_corto/src/helpers/helpers.dart';
+import 'package:en_corto/src/models/response_api.dart';
+import 'package:en_corto/src/models/user.dart';
+import 'package:en_corto/src/services/auth_service.dart';
 import 'package:en_corto/src/theme/constants.dart';
 import 'package:en_corto/src/widgets/custom_button.dart';
 import 'package:en_corto/src/widgets/custom_input.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:provider/provider.dart';
 
 
 class LoginPage extends StatefulWidget {
@@ -81,7 +88,7 @@ class __LoginFormState extends State<_LoginForm> {
   @override
   Widget build(BuildContext context) {
 
-    Size size = MediaQuery.of(context).size;
+    final authService = Provider.of<AuthService>(context);
 
     return Form(
       key: _loginKey,
@@ -94,6 +101,12 @@ class __LoginFormState extends State<_LoginForm> {
               controller: emailController,
               prefixIcon: FontAwesomeIcons.envelope,
               keyboardType: TextInputType.emailAddress,
+              validator: ( value ) {
+                if( value.isEmpty ) {
+                  return 'Ingrese su correo electronico';
+                }
+                return null;
+              }
             ),
             SizedBox( height: 20),
             Column(
@@ -101,10 +114,16 @@ class __LoginFormState extends State<_LoginForm> {
               children: [
                 CustomInput(
                   hintText: 'Contraseña',
-                  controller: emailController,
+                  controller: passwordController,
                   prefixIcon: Icons.lock_outline,
                   prefixIconSize: 22,
                   isPassword: true,
+                  validator: ( value ) {
+                    if( value.isEmpty ) {
+                      return 'Debe ingresar su contraseña';
+                    }
+                    return null;
+                  }
                 ),
                 SizedBox( height: 10),
                 InkWell(
@@ -117,8 +136,58 @@ class __LoginFormState extends State<_LoginForm> {
             ),
             SizedBox( height: 30 ),
             CustomButton(
-              text: 'Iniciar Sesión',
-              onPressed: (){}
+              text: authService.authenticating ? 'Iniciando...' : 'Iniciar sesión',
+              onPressed: authService.authenticating
+              ? null
+              : () async {
+
+                FocusScope.of(context).unfocus();
+                if( _loginKey.currentState.validate() ) {
+
+                  final email = emailController.text.trim();
+                  final password = passwordController.text.trim();
+
+                  final ResponseApi response = await authService.login( email: email, password: password );
+
+                  if( response != null ) {
+                    showAlert(
+                      context,
+                      response.success ? FontAwesomeIcons.checkCircle : FontAwesomeIcons.frownOpen,
+                      response.success ? nixEnCortoSuccessColor : nixEnCortoDangerColor,
+                      response.success ? "Hola" : "Error",
+                      response.message
+                    );
+                    
+                    if( response.success ) {
+                      Future.delayed(const Duration(milliseconds: 2000 ), () {
+
+                        setState(() {
+                          final User user = userFromJson( json.encode(response.data) );
+                          if( user.phone != null ) {
+                            Navigator.pushNamedAndRemoveUntil(context, 'client/products/list', (route) => false);
+                          } else {
+                            Navigator.pushNamedAndRemoveUntil(context, 'phone', (route) => false);
+                          }
+                        });
+
+                      });
+                    } else {
+                      return;
+                    }
+                  } else {
+
+                    showAlert(
+                      context,
+                      FontAwesomeIcons.frownOpen,
+                      nixEnCortoDangerColor,
+                      "Error",
+                      "Ocurrio un error durante el proceso, intente nuevamente"
+                    );
+
+                  }
+                }
+
+              }
             ),
             SizedBox( height: 20 ),
             InkWell(

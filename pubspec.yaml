@@ -32,6 +32,9 @@ dependencies:
   flutter_secure_storage: ^4.2.1
   font_awesome_flutter: ^9.0.0
   introduction_screen: ^2.1.0
+  http: ^0.13.3
+  provider: ^6.0.0
+  animate_do: ^2.0.0
 
 dev_dependencies:
   flutter_test:

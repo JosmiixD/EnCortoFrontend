@@ -8,7 +8,7 @@ const Color nixEnCortoTertiaryColor = Color(0xff0E122B);
 const Color nixEnCortoMutedColor = Color(0xffC2C2CB);
 
 const Color nixEnCortoDangerColor = Color(0xffFF4867);
-const Color nixEnCortoSuccessColor = Color(0xff58FB68);
+const Color nixEnCortoSuccessColor = Color(0xff24C869);
 const Color nixEnCortoWarningColor = Color(0xffFECC05);
 
 const TextStyle nixEnCortoLinkStyle = TextStyle( fontWeight: FontWeight.w500, color: nixEnCortoPrimaryColor);
