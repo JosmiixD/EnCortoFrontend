@@ -101,6 +101,7 @@ class __LoginFormState extends State<_LoginForm> {
               controller: emailController,
               prefixIcon: FontAwesomeIcons.envelope,
               keyboardType: TextInputType.emailAddress,
+              textInputAction: TextInputAction.next,
               validator: ( value ) {
                 if( value.isEmpty ) {
                   return 'Ingrese su correo electronico';
@@ -118,6 +119,7 @@ class __LoginFormState extends State<_LoginForm> {
                   prefixIcon: Icons.lock_outline,
                   prefixIconSize: 22,
                   isPassword: true,
+                  textInputAction: TextInputAction.done,
                   validator: ( value ) {
                     if( value.isEmpty ) {
                       return 'Debe ingresar su contraseña';
@@ -163,11 +165,13 @@ class __LoginFormState extends State<_LoginForm> {
 
                         setState(() {
                           final User user = userFromJson( json.encode(response.data) );
-                          if( user.phone != null ) {
-                            Navigator.pushNamedAndRemoveUntil(context, 'client/products/list', (route) => false);
+
+                          if( user.roles.length > 1 ) {
+                            Navigator.pushNamedAndRemoveUntil(context, 'roles', (route) => false);
                           } else {
-                            Navigator.pushNamedAndRemoveUntil(context, 'phone', (route) => false);
+                            Navigator.pushNamedAndRemoveUntil(context, user.roles[0].route, (route) => false);
                           }
+
                         });
 
                       });

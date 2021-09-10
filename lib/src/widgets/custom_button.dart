@@ -12,6 +12,7 @@ class CustomButton extends StatelessWidget {
   final IconData icon;
   final double radius;
   final double elevation;
+  final double iconSize;
 
   const CustomButton({
     Key key,
@@ -22,7 +23,8 @@ class CustomButton extends StatelessWidget {
     this.textColor = Colors.white,
     this.icon,
     this.radius = 10,
-    this.elevation = 3
+    this.elevation = 3,
+    this.iconSize
   }) : super(key: key);
 
   @override
@@ -45,7 +47,7 @@ class CustomButton extends StatelessWidget {
             children: [
               if( this.icon != null )
               ...[
-                FaIcon( this.icon, size: this.fontSize * 2 ),
+                FaIcon( this.icon, size: this.iconSize == null ? this.fontSize * 2 : this.iconSize),
                 SizedBox( width: 5 )
               ],
               Text( this.text, style: TextStyle( color: this.textColor ),),

@@ -72,7 +72,7 @@ class AuthService with ChangeNotifier {
 
         this.user = userFromJson( json.encode(responseApi.data) );
         await this._saveToken( this.user.sessionToken );
-        _sharedPref.save('user', this.user.toJson());
+        await this._saveUser( json.encode(this.user) );
 
       }
       return responseApi;
@@ -116,7 +116,7 @@ class AuthService with ChangeNotifier {
 
         this.user = userFromJson( json.encode(responseApi.data) );
         await this._saveToken( this.user.sessionToken );
-        _sharedPref.save('user', this.user.toJson());
+        await this._saveUser( json.encode(this.user) );
 
       }
 
@@ -135,8 +135,11 @@ class AuthService with ChangeNotifier {
   Future<bool> isLoggedIn() async {
 
     final token = await this._storage.read(key: 'token');
+    final jsonUser = await this._storage.read(key: 'user');
 
     if( token != null ) {
+      final User user = userFromJson( jsonUser );
+      this.user = user;
       return true;
     }else {
       return false;
@@ -163,9 +166,13 @@ class AuthService with ChangeNotifier {
     return await _storage.write(key: 'token', value: token );
   }
 
+  Future _saveUser( String user ) async {
+    return await _storage.write(key: 'user', value: user );
+  }
+
   Future logout() async {
     await _storage.delete(key: 'token');
-    _sharedPref.remove('user');
+    await _storage.delete(key: 'user');
   }
 
 }

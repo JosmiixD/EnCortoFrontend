@@ -38,6 +38,7 @@ class _MyAppState extends State<MyApp> {
             iconTheme: IconThemeData( color: Colors.black ),
             elevation: 0,
             centerTitle: true,
+            backgroundColor: Colors.white
           ),
           textTheme: ThemeData.light()
             .textTheme

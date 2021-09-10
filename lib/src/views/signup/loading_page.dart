@@ -1,7 +1,11 @@
+import 'dart:convert';
+
 import 'package:animate_do/animate_do.dart';
+import 'package:en_corto/src/models/user.dart';
 import 'package:en_corto/src/services/auth_service.dart';
 import 'package:en_corto/src/theme/constants.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:provider/provider.dart';
 
 
@@ -57,8 +61,14 @@ class LoadingPage extends StatelessWidget {
 
     } else  if( await authService.isLoggedIn() ) {
 
+      final User user = authService.user;
       await Future.delayed( Duration( milliseconds: 500) );
-      Navigator.pushNamedAndRemoveUntil(context, 'client/products/list', (route) => false);
+
+      if( user.roles.length > 1 ) {
+        Navigator.pushNamedAndRemoveUntil(context, 'roles', (route) => false);
+      } else {
+        Navigator.pushNamedAndRemoveUntil(context, user.roles[0].route, (route) => false);
+      }
     } else {
       await Future.delayed( Duration( milliseconds: 500) );
       Navigator.pushNamedAndRemoveUntil(context, 'login', (route) => false);
