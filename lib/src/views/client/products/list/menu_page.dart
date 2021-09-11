@@ -7,16 +7,16 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 
 class MenuItems {
-  static const home     = MenuItem('Inicio', FontAwesomeIcons.home);
-  static const profile  = MenuItem('Perfil', FontAwesomeIcons.userAlt);
-  static const orders   = MenuItem('Ordenes', FontAwesomeIcons.shoppingBag);
-  static const role     = MenuItem('Seleccionar rol', FontAwesomeIcons.thLarge);
+  static const home       = MenuItem('Inicio', FontAwesomeIcons.home);
+  static const orders     = MenuItem('Ordenes', FontAwesomeIcons.shoppingBag);
+  static const role       = MenuItem('Seleccionar rol', FontAwesomeIcons.thLarge);
+  static const settings   = MenuItem('Configurar cuenta', FontAwesomeIcons.cog);
 
   static const all = <MenuItem>[
     home,
-    profile,
     orders,
     role,
+    settings,
   ];
 }
 

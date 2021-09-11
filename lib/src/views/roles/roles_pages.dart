@@ -34,7 +34,6 @@ class RolesPage extends StatelessWidget {
                       delay: Duration( milliseconds: index * 200 ),
                       child: GestureDetector(
                         onTap: () {
-                          // Navigator.pushNamed(context, user.roles[index].route);
                           Navigator.pushNamedAndRemoveUntil(context, user.roles[index].route, (route) => false);
                         },
                         child: Padding(
@@ -42,8 +41,8 @@ class RolesPage extends StatelessWidget {
                           child: RoleCard(
                             role: user.roles[index],
                             colors: <Color>[
-                                Color(0xFFF2FEFE),
-                                Color(0xFFDAFCFE),
+                                Color(0xFFFBA83C),
+                                Color(0xFFF3AE46),
                               ]
                           ),
                         ),

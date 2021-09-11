@@ -1,53 +1,41 @@
-import 'package:en_corto/src/models/menu_item.dart';
 import 'package:en_corto/src/theme/constants.dart';
-import 'package:en_corto/src/views/client/products/list/menu_page.dart';
-import 'package:en_corto/src/views/client/products/list/products_list_page.dart';
-import 'package:en_corto/src/views/general/profile_page.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_zoom_drawer/flutter_zoom_drawer.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 
-class ClientProductsListPage extends StatefulWidget {
-
-  @override
-  _ClientProductsListPageState createState() => _ClientProductsListPageState();
-}
-
-class _ClientProductsListPageState extends State<ClientProductsListPage> {
-
-  MenuItem currentItem = MenuItems.home;
+class ClientProductsListPage extends StatelessWidget {
 
   @override
-  Widget build(BuildContext context) => ZoomDrawer(
-    style: DrawerStyle.Style1,
-    slideWidth: MediaQuery.of(context).size.width * 0.7,
-    backgroundColor: nixEnCortoPrimaryColor.withGreen(180),
-    angle: 0,
-    showShadow: true,
-    mainScreen: getScreen(),
-    menuScreen: Builder(
-      builder: (context) => MenuPage(
-        currentItem: currentItem,
-        onSelectedItem: (item) {
-          setState(() => currentItem = item );
-          ZoomDrawer.of(context).close();
-        }
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        centerTitle: false,
+        title: Row(
+          children: [
+            FaIcon( Icons.location_on_outlined, size: 25, color: nixEnCortoPrimaryColor),
+            SizedBox( width: 10 ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Text('Entregar en'),
+                    SizedBox( width: 5),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 3.0),
+                      child: FaIcon( FontAwesomeIcons.chevronDown, size: 12, color: nixEnCortoMutedColor),
+                    )
+                  ],
+                ),
+                Text('Calle Hidalgo #434 Centro Altepexi, Pue', style: nixEnCortoCaptionStyle, overflow: TextOverflow.ellipsis),
+              ],
+            ),
+          ],
+        )
       ),
-    ),
-  );
-
-  Widget getScreen() {
-    switch (currentItem) {
-      case MenuItems.home:
-        return ProductsListPage();
-      case MenuItems.profile:
-        return ProfilePage();
-      case MenuItems.orders:
-        return ProductsListPage();
-      case MenuItems.role:
-        return ProductsListPage();
-      default:
-        return ProductsListPage();
-    }
+      body: Center(
+        child: Text('Hola productos'),
+     ),
+   );
   }
 }

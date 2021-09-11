@@ -23,7 +23,7 @@ class CustomButton extends StatelessWidget {
     this.textColor = Colors.white,
     this.icon,
     this.radius = 10,
-    this.elevation = 3,
+    this.elevation = 0,
     this.iconSize
   }) : super(key: key);
 

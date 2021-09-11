@@ -194,6 +194,40 @@ class __LoginFormState extends State<_LoginForm> {
               }
             ),
             SizedBox( height: 20 ),
+            Text('Ó', style: TextStyle( color: nixEnCortoMutedColor)),
+            SizedBox( height: 20 ),
+            CustomButton(
+              text: 'Conectar Con Facebook',
+              backgroundColor: Color(0xff3B5998),
+              icon: FontAwesomeIcons.facebookSquare,
+              onPressed: (){}
+            ),
+            SizedBox( height: 20 ),
+            ElevatedButton(
+              onPressed: (){},
+              style: ElevatedButton.styleFrom(
+                elevation: 0,
+                primary: Color(0xFFEAEAEB),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular( 10 )
+                )
+              ),
+              child: Container(
+                width: double.infinity,
+                height: 50,
+                child: Center(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                        Image.asset('assets/img/general/google_icon.png', width: 20),
+                        SizedBox( width: 5 ),
+                        Text( 'Continuar con Google', style: TextStyle( color: Colors.black ),),
+                    ],
+                  ),
+                )
+              ),
+            ),
+            SizedBox( height: 20 ),
             InkWell(
               child: RichText(
                 text: TextSpan(
@@ -208,16 +242,6 @@ class __LoginFormState extends State<_LoginForm> {
                 Navigator.pushNamed(context, 'signup');
               },
             ),
-            SizedBox( height: 20 ),
-            Text('Ó', style: TextStyle( color: nixEnCortoMutedColor)),
-            SizedBox( height: 20 ),
-            CustomButton(
-              text: 'Conectar Con Facebook',
-              backgroundColor: Color(0xff3B5998),
-              icon: FontAwesomeIcons.facebookSquare,
-              onPressed: (){}
-            ),
-            SizedBox( height: 20 ),
           ],
         )
       ),

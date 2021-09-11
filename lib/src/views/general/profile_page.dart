@@ -23,7 +23,6 @@ class ProfilePage extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        leading: MenuWidget(),
         title: Text('Mi perfil')
       ),
       body: Container(
@@ -65,7 +64,6 @@ class __FormState extends State<_Form> {
     nameController?.dispose();
     lastNameController?.dispose();
     phoneController?.dispose();
-    print('Profile Dispose');
     super.dispose();
   }
 
@@ -81,7 +79,7 @@ class __FormState extends State<_Form> {
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Container(
-          padding: EdgeInsets.symmetric( horizontal: 20),
+          padding: EdgeInsets.symmetric( horizontal: 10),
           width: size.width,
           child: Column(
             children: [
@@ -162,6 +160,11 @@ class __FormState extends State<_Form> {
                 controller: phoneController,
                 textInputAction: TextInputAction.next,
               ),
+              SizedBox( height: 40 ),
+              CustomButton(
+                text: 'Guardar',
+                onPressed: (){}
+              )
             ],
           ),
         )

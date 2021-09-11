@@ -37,28 +37,7 @@ class CustomInput extends StatefulWidget {
 
 class _CustomInputState extends State<CustomInput> {
 
-  FocusNode _focus = new FocusNode();
   bool showPassword = false;
-  bool isFocused = false;
-
-  @override
-  void initState() { 
-    _focus.addListener( _onFocusChange );
-    super.initState();
-  }
-
-  @override
-  void dispose() { 
-    _focus.removeListener( _onFocusChange );
-    _focus.dispose();
-    super.dispose();
-  }
-
-  void _onFocusChange() {
-    setState(() {
-      isFocused = !isFocused;
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -69,52 +48,42 @@ class _CustomInputState extends State<CustomInput> {
           padding: EdgeInsets.all( 2 ),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular( 10 ),
-            border: Border.all(
-              color: isFocused ? nixEnCortoPrimaryColor : nixEnCortoMutedColor.withOpacity(0.5)
-            ),
             color: Color(0xffEFEFEF),
           ),
           child: TextFormField(
-            readOnly: true,
+            maxLines: this.widget.maxLines,
+            validator: this.widget.validator != null ? this.widget.validator : ( value ) {
+              if( value.isEmpty ) {
+                return 'Ingrese un valor al campo';
+              }
+              return null;
+            } ,
+            style: this.widget.textStyle,
+            controller: this.widget.controller,
+            cursorColor: nixEnCortoPrimaryColor,
+            autocorrect: false,
+            keyboardType: this.widget.keyboardType,
+            textCapitalization: this.widget.textCapitalization,
+            textInputAction: this.widget.textInputAction,
+            obscureText: this.widget.isPassword ? this.showPassword ? false : true : false, 
             decoration: InputDecoration(
+              suffixIcon: this.widget.isPassword ? Padding(
+                padding: const EdgeInsets.only( top: 15,),
+                child: InkWell( splashColor: Colors.transparent ,child: FaIcon( this.showPassword ? FontAwesomeIcons.eyeSlash : FontAwesomeIcons.eye, size: 20), onTap: () {
+                  setState(() {
+                    this.showPassword = !this.showPassword;
+                  });
+                }),
+              ) : null,
+              prefixIcon: Icon( this.widget.prefixIcon, size: this.widget.prefixIconSize, color: Colors.grey),
+              hintText: this.widget.hintText,
+              focusColor: Colors.red,
               border: InputBorder.none,
-            ),
-          ),
-        ),
-        TextFormField(
-          focusNode: _focus,
-          maxLines: this.widget.maxLines,
-          validator: this.widget.validator != null ? this.widget.validator : ( value ) {
-            if( value.isEmpty ) {
-              return 'Ingrese un valor al campo';
-            }
-            return null;
-          } ,
-          style: this.widget.textStyle,
-          controller: this.widget.controller,
-          cursorColor: nixEnCortoPrimaryColor,
-          autocorrect: false,
-          keyboardType: this.widget.keyboardType,
-          textCapitalization: this.widget.textCapitalization,
-          textInputAction: this.widget.textInputAction,
-          obscureText: this.widget.isPassword ? this.showPassword ? false : true : false, 
-          decoration: InputDecoration(
-            suffixIcon: this.widget.isPassword ? Padding(
-              padding: const EdgeInsets.only( top: 15,),
-              child: InkWell( splashColor: Colors.transparent ,child: FaIcon( this.showPassword ? FontAwesomeIcons.eyeSlash : FontAwesomeIcons.eye, size: 20), onTap: () {
-                setState(() {
-                  this.showPassword = !this.showPassword;
-                });
-              }),
-            ) : null,
-            prefixIcon: Icon( this.widget.prefixIcon, size: this.widget.prefixIconSize,),
-            hintText: this.widget.hintText,
-            focusColor: nixEnCortoPrimaryColor,
-            border: InputBorder.none,
-            focusedBorder: InputBorder.none,
-            errorBorder: InputBorder.none,
-            errorStyle: TextStyle(
-              color: nixEnCortoDangerColor
+              focusedBorder: InputBorder.none,
+              errorBorder: InputBorder.none,
+              errorStyle: TextStyle(
+                color: nixEnCortoDangerColor
+              ),
             ),
           ),
         ),
