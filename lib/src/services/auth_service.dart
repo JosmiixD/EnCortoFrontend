@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:en_corto/src/models/response_api.dart';
 import 'package:en_corto/src/utils/shared_pref.dart';
@@ -8,6 +9,8 @@ import 'package:en_corto/src/models/user.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:mime_type/mime_type.dart';
+import 'package:http_parser/http_parser.dart';
 
 
 class AuthService with ChangeNotifier {
@@ -82,6 +85,102 @@ class AuthService with ChangeNotifier {
       this.authenticating = false;
       return null;
     }
+  }
+
+  Future<dynamic> updateUserInformation( String name, String lastName, String phone, File image) async {
+
+    this.authenticating = true;
+    String imagePath = this.user.image;
+
+    try {
+
+      if( image != null ) {
+
+        imagePath = await this.uploadPicture( image );
+
+      }
+
+      final data = {
+        'id'      : this.user.id,
+        'name'    : name,
+        'lastname': lastName,
+        'phone'   : phone,
+        'image'   : imagePath,
+      };
+
+      final headers = {
+        'Content-type': 'application/json',
+        'Authorization': this.user.sessionToken
+      };
+
+      final Uri uri = Uri.parse('$_url$_api/update');
+
+      final response = await http.put(
+        uri,
+        headers: headers,
+        body: json.encode(data)
+      );
+
+
+      this.authenticating = false;
+
+      if( response.statusCode == 401 ) {
+          this.logout();
+          return false;
+      }
+
+      final ResponseApi responseApi = responseApiFromJson( response.body );
+      
+      if( responseApi.success ) {
+
+        this.user = userFromJson( json.encode(responseApi.data) );  
+        await this._saveToken( this.user.sessionToken );
+        print( this.user.toJson());
+        await this._saveUser( json.encode(this.user) );
+
+      }
+      
+      return responseApi;
+      
+    } catch (e) {
+      print('Error: $e');
+      this.authenticating = false;
+      return null;
+    }
+
+  }
+
+  Future<String> uploadPicture( File image ) async {
+
+    final url = Uri.parse('https://api.cloudinary.com/v1_1/dgni8baqe/image/upload?upload_preset=f7p3w8zs');
+    final mimeType = mime( image.path ).split('/');
+
+    final imageUploadRequest = http.MultipartRequest(
+      'POST',
+      url,
+    );
+
+    final file = await http.MultipartFile.fromPath(
+      'file',
+      image.path,
+      contentType: MediaType( mimeType[0], mimeType[1] )
+    );
+
+    imageUploadRequest.files.add( file );
+
+    final streamResponse = await imageUploadRequest.send();
+    final response = await http.Response.fromStream( streamResponse );
+
+    if( response.statusCode != 200 && response.statusCode != 201 ) {
+      print('Something went wrong while uploading your image');
+      print( response.body );
+      return null;
+    }
+
+    final responseData = json.decode( response.body );
+
+    return responseData['secure_url'];
+
   }
 
 

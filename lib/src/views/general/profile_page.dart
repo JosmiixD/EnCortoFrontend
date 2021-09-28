@@ -1,10 +1,12 @@
 import 'dart:io';
 
 import 'package:animate_do/animate_do.dart';
+import 'package:en_corto/src/api/environment.dart';
 import 'package:en_corto/src/helpers/helpers.dart';
 import 'package:en_corto/src/models/user.dart';
 import 'package:en_corto/src/services/auth_service.dart';
 import 'package:en_corto/src/theme/constants.dart';
+import 'package:en_corto/src/views/signup/loading_page.dart';
 import 'package:en_corto/src/widgets/custom_button.dart';
 import 'package:en_corto/src/widgets/custom_hamburger_menu.dart';
 import 'package:en_corto/src/widgets/custom_input.dart';
@@ -47,6 +49,8 @@ class __FormState extends State<_Form> {
   final nameController      = TextEditingController();
   final lastNameController  = TextEditingController();
   final phoneController     = TextEditingController();
+  final _updateUserKey      = GlobalKey<FormState>();
+
   File profileImage;
 
   @override
@@ -75,100 +79,178 @@ class __FormState extends State<_Form> {
     final User user = authService.user;
     
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        Container(
-          padding: EdgeInsets.symmetric( horizontal: 10),
-          width: size.width,
-          child: Column(
-            children: [
-              InkWell(
-                splashColor: Colors.transparent,
-                child: Stack(
-                  alignment: Alignment.center,
-                  children: [
-                    Container(
-                      height: size.width * 0.35,
-                      width: size.width * 0.35,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular( (size.width * 0.35)/2 )
-                      ),
-                      child: _buildImage(user)
-                    ),
-                    Positioned(
-                      bottom: 5,
-                      right: 5,
-                      child: Container(
-                        height: size.width * 0.08,
-                        width: size.width * 0.08,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular( size.width * 0.04 ),
-                          color: nixEnCortoPrimaryColor
+    return SingleChildScrollView(
+      physics: BouncingScrollPhysics(),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Container(
+            padding: EdgeInsets.symmetric( horizontal: 10),
+            width: size.width,
+            child: Form(
+              key: _updateUserKey,
+              child: Column(
+                children: [
+                  InkWell(
+                    splashColor: Colors.transparent,
+                    child: Stack(
+                      alignment: Alignment.center,
+                      children: [
+                        Container(
+                          height: size.width * 0.35,
+                          width: size.width * 0.35,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular( (size.width * 0.35)/2 )
+                          ),
+                          child: _buildImage(user)
                         ),
-                        child: Center(child: FaIcon( FontAwesomeIcons.camera, size: size.width * 0.03, color: Colors.white))
-                      )
-                    )
-                  ],
-                ),
-                onTap: (){
-                  showOptions( context, 
-                    onCameraPressed: () {
-                      _selectImage( ImageSource.camera );
+                        Positioned(
+                          bottom: 5,
+                          right: 5,
+                          child: Container(
+                            height: size.width * 0.08,
+                            width: size.width * 0.08,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular( size.width * 0.04 ),
+                              color: nixEnCortoPrimaryColor
+                            ),
+                            child: Center(child: FaIcon( FontAwesomeIcons.camera, size: size.width * 0.03, color: Colors.white))
+                          )
+                        )
+                      ],
+                    ),
+                    onTap: (){
+                      showOptions( context, 
+                        onCameraPressed: () {
+                          _selectImage( ImageSource.camera );
+                        },
+                        onGalleryPressed: () {
+                          _selectImage( ImageSource.gallery );
+                        },
+                      );
+                    }
+                  ),
+                  SizedBox( height: 20),
+                  Text('${user.name} ${user.lastname}', style: TextStyle( fontSize: 15,fontWeight: FontWeight.w500,)),
+                  Text('${user.email}', style: TextStyle( fontSize: 13,fontWeight: FontWeight.w400, color: nixEnCortoMutedColor)),
+                  SizedBox( height: 30 ),
+                  CustomInput(
+                    hintText: 'Nombres',
+                    controller: nameController,
+                    prefixIcon: FontAwesomeIcons.user,
+                    textInputAction: TextInputAction.next,
+                    textCapitalization: TextCapitalization.words,
+                    validator: ( value ) {
+                      if( value.isEmpty ) {
+                        return 'Debe ingresar su nombre';
+                      }
+                      return null;
                     },
-                    onGalleryPressed: () {
-                      _selectImage( ImageSource.gallery );
+                  ),
+                  SizedBox( height: 20),
+                  CustomInput(
+                    hintText: 'Apellidos',
+                    controller: lastNameController,
+                    prefixIcon: FontAwesomeIcons.user,
+                    textInputAction: TextInputAction.next,
+                    textCapitalization: TextCapitalization.words,
+                    validator: ( value ) {
+                      if( value.isEmpty ) {
+                        return 'Debe ingresar sus apellidos';
+                      }
+                      return null;
                     },
-                  );
-                }
+                  ),
+                  SizedBox( height: 20),
+                  CustomInput(
+                    hintText: 'Numero de telefono',
+                    prefixIcon: FontAwesomeIcons.mobileAlt,
+                    controller: phoneController,
+                    textInputAction: TextInputAction.done,
+                    keyboardType: TextInputType.phone,
+                    validator: ( value ) {
+                      if( value.isEmpty ) {
+                        return 'Debe ingresar su numero';
+                      }
+                      return null;
+                    },
+                  ),
+                  SizedBox( height: 40 ),
+                  CustomButton(
+                    text: 'Guardar',
+                    onPressed: authService.authenticating
+                    ? null
+                    : () async{
+
+                      FocusScope.of(context).unfocus();
+                      if( _updateUserKey.currentState.validate() ) {
+
+                        final name        = nameController.text.trim();
+                        final lastName    = lastNameController.text.trim();
+                        final phone       = phoneController.text.trim();
+
+                        final response = await authService.updateUserInformation(name, lastName, phone, profileImage);
+
+                        if( response != null ) {
+
+                          if( response == false ) {
+
+                            showAlert(
+                              context,
+                              FontAwesomeIcons.frownOpen,
+                              nixEnCortoDangerColor,
+                              "Sesión expirada",
+                              "Tu sesión ha expirado, vuelve a iniciar sesión"
+                            );
+
+                            Future.delayed(const Duration(milliseconds: 2000 ), () {
+
+                              setState(() {
+                                Navigator.of(context, rootNavigator: true).pushReplacement(MaterialPageRoute(builder: (context) => new LoadingPage()));
+                              });
+
+                            });
+
+                          } else {
+
+                            showAlert(
+                              context,
+                              response.success ? FontAwesomeIcons.checkCircle : FontAwesomeIcons.frownOpen,
+                              response.success ? nixEnCortoSuccessColor : nixEnCortoDangerColor,
+                              response.success ? "Actualizado" : "Error",
+                              response.message
+                            );
+
+                            Future.delayed(const Duration(milliseconds: 2000 ), () {
+
+                              setState(() {
+                                Navigator.pushNamedAndRemoveUntil(context, 'client/navigation', (route) => false);
+                              });
+
+                            });
+
+                          }
+
+                        } else {
+                          showAlert(
+                          context,
+                            FontAwesomeIcons.frownOpen,
+                            nixEnCortoDangerColor,
+                            "Error",
+                            "Ocurrio un error durante la actualizacion, intente mas tarde"
+                          );
+                        }
+
+                      }
+
+                    }
+                  )
+                ],
               ),
-              SizedBox( height: 20),
-              Text('${user.name} ${user.lastname}', style: TextStyle( fontSize: 15,fontWeight: FontWeight.w500,)),
-              Text('${user.email}', style: TextStyle( fontSize: 13,fontWeight: FontWeight.w400, color: nixEnCortoMutedColor)),
-              SizedBox( height: 30 ),
-              CustomInput(
-                hintText: 'Nombres',
-                controller: nameController,
-                prefixIcon: FontAwesomeIcons.user,
-                textInputAction: TextInputAction.next,
-                textCapitalization: TextCapitalization.words,
-                validator: ( value ) {
-                  if( value.isEmpty ) {
-                    return 'Debe ingresar su nombre';
-                  }
-                  return null;
-                },
-              ),
-              SizedBox( height: 20),
-              CustomInput(
-                hintText: 'Apellidos',
-                controller: lastNameController,
-                prefixIcon: FontAwesomeIcons.user,
-                textInputAction: TextInputAction.next,
-                textCapitalization: TextCapitalization.words,
-                validator: ( value ) {
-                  if( value.isEmpty ) {
-                    return 'Debe ingresar sus apellidos';
-                  }
-                  return null;
-                },
-              ),
-              SizedBox( height: 20),
-              CustomInput(
-                hintText: 'Numero de telefono',
-                prefixIcon: FontAwesomeIcons.mobileAlt,
-                controller: phoneController,
-                textInputAction: TextInputAction.next,
-              ),
-              SizedBox( height: 40 ),
-              CustomButton(
-                text: 'Guardar',
-                onPressed: (){}
-              )
-            ],
-          ),
-        )
-      ],
+            ),
+          )
+        ],
+      ),
     );
   }
 
@@ -179,7 +261,7 @@ class __FormState extends State<_Form> {
       
       final ImagePicker _imagePicker = ImagePicker();
 
-      XFile pickedImage = await _imagePicker.pickImage(source: source, imageQuality: source == ImageSource.camera ? 50 : 70 );
+      XFile pickedImage = await _imagePicker.pickImage(source: source, imageQuality: source == ImageSource.camera ? 40 : 70, preferredCameraDevice: source == ImageSource.camera ? CameraDevice.front : CameraDevice.rear);
 
       if( pickedImage != null ) {
 
@@ -199,10 +281,12 @@ class __FormState extends State<_Form> {
   _buildImage(User user) {
 
     return ( user.image != null && profileImage == null )
-    ? FadeInImage(
-      placeholder: AssetImage('assets/img/general/loading.gif'),
-      image: NetworkImage( user.image ),
-      fit: BoxFit.cover
+    ? ClipOval(
+      child: FadeInImage(
+        placeholder: AssetImage('assets/img/general/loading.gif', ),
+        image: NetworkImage( '${user.image}' ),
+        fit: BoxFit.cover,
+      ),
     )
     : ClipOval(
       child: Image(

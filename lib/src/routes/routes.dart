@@ -1,6 +1,7 @@
 import 'package:en_corto/src/views/client/navigation_page.dart';
 import 'package:en_corto/src/views/client/products/list/client_products_list_page.dart';
 import 'package:en_corto/src/views/delivery/orders/list/delivery_orders_list_page.dart';
+import 'package:en_corto/src/views/general/account_settings_page.dart';
 import 'package:en_corto/src/views/general/profile_page.dart';
 import 'package:en_corto/src/views/introduction/introduction_screens.dart';
 import 'package:en_corto/src/views/restaurant/orders/list/restaurant_orders_list_page.dart';
@@ -19,6 +20,7 @@ final Map<String, Widget Function( BuildContext )> appRoutes = {
   'phone'                   : ( _ ) => PhoneNumberPage(),
   'roles'                   : ( _ ) => RolesPage(),
   'profile'                 : ( _ ) => ProfilePage(),
+  'account/settings'        : ( _ ) => AccountSettingsPage(),
   'client/navigation'       : ( _ ) => ClientNavigationPage(),
 
   'client/products/list'    : ( _ ) => ClientProductsListPage(),
