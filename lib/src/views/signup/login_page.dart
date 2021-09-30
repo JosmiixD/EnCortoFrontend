@@ -5,8 +5,10 @@ import 'package:en_corto/src/models/response_api.dart';
 import 'package:en_corto/src/models/user.dart';
 import 'package:en_corto/src/services/auth_service.dart';
 import 'package:en_corto/src/theme/constants.dart';
+import 'package:en_corto/src/views/signup/signup_page.dart';
 import 'package:en_corto/src/widgets/custom_button.dart';
 import 'package:en_corto/src/widgets/custom_input.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
@@ -239,7 +241,9 @@ class __LoginFormState extends State<_LoginForm> {
                 )
               ),
               onTap: (){
-                Navigator.pushNamed(context, 'signup');
+                Navigator.of(context).push( CupertinoPageRoute(
+                  builder: ( context ) => SignUpPage()
+                ));
               },
             ),
           ],

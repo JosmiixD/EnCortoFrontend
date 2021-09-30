@@ -41,8 +41,8 @@ class RolesPage extends StatelessWidget {
                           child: RoleCard(
                             role: user.roles[index],
                             colors: <Color>[
-                                Color(0xFFFBA83C),
-                                Color(0xFFF3AE46),
+                                Color(0xFFFCC827),
+                                Color(0xFFFCC824),
                               ]
                           ),
                         ),

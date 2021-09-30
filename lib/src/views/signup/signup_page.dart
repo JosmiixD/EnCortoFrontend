@@ -1,6 +1,7 @@
 import 'package:en_corto/src/helpers/helpers.dart';
 import 'package:en_corto/src/services/auth_service.dart';
 import 'package:en_corto/src/theme/constants.dart';
+import 'package:en_corto/src/widgets/custom_back_button.dart';
 import 'package:en_corto/src/widgets/custom_button.dart';
 import 'package:en_corto/src/widgets/custom_input.dart';
 import 'package:flutter/material.dart';
@@ -17,6 +18,7 @@ class SignUpPage extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
+        leading: CustomBackButton(),
         backgroundColor: Colors.white,
         title: Text('Registro'),
       ),

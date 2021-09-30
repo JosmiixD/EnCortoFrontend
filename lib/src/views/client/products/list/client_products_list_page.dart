@@ -16,7 +16,9 @@ class ClientProductsListPage extends StatelessWidget {
     return Scaffold(
       drawer: ClientNavigationDrawer(),
       appBar: AppBar(
-        // leading: _buildMenu(),
+        leading: Builder(
+          builder: ( context ) => _buildMenu( context ),
+        ),
         title: Container(
           width: size.width * 0.45,
           child: Row(
@@ -35,14 +37,14 @@ class ClientProductsListPage extends StatelessWidget {
    );
   }
 
-  Widget _buildMenu() {
+  Widget _buildMenu( BuildContext context ) {
     return IconButton(
       icon: Transform(
         alignment: Alignment.center,
         transform: Matrix4.rotationY(math.pi),
         child: Image.asset('assets/img/general/menu.png', width: 17, height: 17)
       ),
-      onPressed: (){}
+      onPressed: () => Scaffold.of(context).openDrawer()
     );
   }
 }

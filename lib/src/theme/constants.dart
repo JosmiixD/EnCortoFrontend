@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 
-const Color nixEnCortoPrimaryColor = Color(0xffFBA83C);
+const Color nixEnCortoPrimaryColor = Color(0xffFCC827);
 const Color nixEnCortoSecondaryColor = Color(0xffF3AE46);
 const Color nixEnCortoTertiaryColor = Color(0xff0E122B);
 

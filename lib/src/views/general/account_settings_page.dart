@@ -1,6 +1,7 @@
 import 'package:en_corto/src/services/auth_service.dart';
 import 'package:en_corto/src/views/general/profile_page.dart';
 import 'package:en_corto/src/views/signup/loading_page.dart';
+import 'package:en_corto/src/widgets/custom_back_button.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:persistent_bottom_nav_bar/persistent-tab-view.dart';
@@ -16,6 +17,7 @@ class AccountSettingsPage extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
+        leading: CustomBackButton(),
         title: Text('Configuración'),
       ),
       body: SingleChildScrollView(
@@ -96,7 +98,6 @@ class AccountSettingsPage extends StatelessWidget {
                 onTap: () async {
                   await authService.logout();
                   Navigator.of(context, rootNavigator: true).pushReplacement(MaterialPageRoute(builder: (context) => new LoadingPage()));
-                  // Navigator.pushNamedAndRemoveUntil(context, 'loading', (route) => false);
                 },
               ),
             ],
