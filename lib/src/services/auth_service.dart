@@ -233,18 +233,75 @@ class AuthService with ChangeNotifier {
 
   Future<bool> isLoggedIn() async {
 
-    final token = await this._storage.read(key: 'token');
-    final jsonUser = await this._storage.read(key: 'user');
+    this.authenticating = true;
 
-    if( token != null ) {
-      final User user = userFromJson( jsonUser );
-      this.user = user;
-      return true;
-    }else {
+    try {
+
+      final token = await this._storage.read(key: 'token');
+      if( token != null ) {
+
+        final jsonUser = await this._storage.read(key: 'user');
+        final User user = userFromJson( jsonUser );
+
+        final data = {
+          'id': user.id,
+        };
+
+        final headers = {
+          'Content-type': 'application/json',
+          'Authorization': token
+        };
+
+        final Uri uri = Uri.parse('$_url$_api/token-renew');
+
+        final response = await http.post(
+          uri,
+          headers: headers,
+          body: json.encode(data)
+        );
+
+        this.authenticating = false;
+
+        
+        if( response.statusCode == 200 ) {
+
+          final ResponseApi responseApi = responseApiFromJson( response.body );
+          this.user = userFromJson( json.encode(responseApi.data) );
+          await this._saveToken( this.user.sessionToken );
+          await this._saveUser( json.encode(this.user) );
+          return true;
+
+        }else {
+          this.logout();
+          this.authenticating = false;
+          return false;
+        }
+
+      } else {
+        this.authenticating = false;
+        return false;
+      }
+      
+    } catch (e) {
       return false;
     }
-
+    
   }
+
+  // Future<bool> isLoggedIn() async {
+
+  //   final token = await this._storage.read(key: 'token');
+  //   final jsonUser = await this._storage.read(key: 'user');
+
+  //   if( token != null ) {
+  //     final User user = userFromJson( jsonUser );
+  //     this.user = user;
+  //     return true;
+  //   }else {
+  //     return false;
+  //   }
+
+  // }
 
   Future<bool> isFirstTime() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
